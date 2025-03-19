@@ -54,6 +54,6 @@ exports.getCart = async (req, res) => {
         const cartItems = await Cart.find({ user: req.user.id }).populate("product");
         res.json(cartItems)
     } catch (error) {
-        res.send("Error fetching cart");
+        res.json({message: "Error fetching cart"});
     }
 }

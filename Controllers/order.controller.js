@@ -2,7 +2,8 @@ const Order = require("../Models/order.model");
 const Cart = require("../Models/cart.model");
 const { reduceStock } = require("./stock.controller"); // Import reduceStock function
 
-//create an order
+// create a new order from the user's cart.
+
 exports.createOrder = async (req,res) => {
     try {
         // Fetch the user's cart items and populate product details
@@ -10,7 +11,7 @@ exports.createOrder = async (req,res) => {
         
         // Check if the cart is empty
         if (cartItems.length === 0) {
-            return res.send("Cart is empty, Order something");
+            return res.json({ message: "Cart is empty, Order something" });
         }
 
         // Calculate the total order amount
@@ -24,12 +25,12 @@ exports.createOrder = async (req,res) => {
         // Create the order
         const order = await Order.create({
             user: req.user.id,
-            items: cartItems.map(item => ({
-                product: item.product._id,
-                quantity: item.quantity,
-                price: item.product.price,
+            items: cartItems.map(({ product, quantity }) => ({
+                product: product._id,
+                quantity,
+                price: product.price,
             })),
-            totalAmount,
+            totalAmount
         });
 
         // Clear cart
@@ -44,7 +45,9 @@ exports.createOrder = async (req,res) => {
 // Get all orders(Admin only)
 exports.getAllOrders = async (req, res) => {
     try {
-        const orders = await Order.find().populate("user", "username email").populate("items.product", "name price");
+        const orders = await Order.find()
+            .populate("user", "username email") // Include user details
+            .populate("items.product", "name price"); // Include product details
         res.json(orders);
     } catch {
         res.status(500).json({ message: "Error Fetching orders"});
@@ -57,6 +60,7 @@ exports.updateOrderStatus = async ( req, res) => {
     const { status } = req.body;
 
     try {
+        // Find the order
         const order = await Order.findById(orderId);
         if (!order) {
             return res.status(404).json({ message: 'Order not found' });
