@@ -7,15 +7,27 @@ const userSchema = new mongoose.Schema({
         required: true, 
         unique: true 
     },
+
     email: { 
         type: String, 
-        required: true, 
-        unique: true 
+        required: [true,"Please provide your email"],
+        unique: true,
+        lowercase: true,
+        trim: true
     },
+
     password: { 
         type: String, 
-        required: true 
+        required: [true, "Please provide a password"],
+        minlength: 8,
+        select: false
     },
+
+    photo: {
+        type: String,
+        default: 'default.jpg'
+    },
+
     role: { 
         type: String, 
         enum: ["user", "admin"], 
