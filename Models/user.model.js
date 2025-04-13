@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const Cart = require("./cart.model"); // Cart model
+const Review = require("./review.model"); // Review model
 
 const userSchema = new mongoose.Schema({
     username: { 
@@ -54,5 +56,23 @@ userSchema.pre("save", async function (next) {
 userSchema.methods.matchPassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password); // Uses bcrypt to compare the passwords.
 };
+
+
+// Post middleware to delete cart after a user is deleted
+userSchema.post("findOneAndDelete", async function (doc) {
+    if (doc) {
+        try {
+            // Delete the user's cart (E-Commerce API)
+            await Cart.deleteOne({ user: doc._id });
+            
+            // Delete all reviews associated with the user
+            await Review.deleteMany({ user: doc._id });
+
+            console.log(`User ${doc.username} and their associated cart have been deleted.`);
+        } catch (error) {
+            console.error(`Error deleting cart for user: ${doc._id}`, error);
+        }
+    }
+});
 
 module.exports = mongoose.model("User", userSchema);

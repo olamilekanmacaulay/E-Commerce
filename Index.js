@@ -6,6 +6,7 @@ const userRoute = require("./Routes/user.routes");
 const productRoute = require("./Routes/product.routes");
 const cartRoute = require('./Routes/cart.routes');
 const orderRoute = require('./Routes/order.routes');
+const reviewRoute = require('./Routes/review.routes');
 
 
 dotenv.config();
@@ -30,6 +31,7 @@ app.use(userRoute);
 app.use(productRoute);
 app.use(cartRoute);
 app.use(orderRoute);
+app.use(reviewRoute);
 
 app.listen(PORT, () => {
         console.log("App is running");

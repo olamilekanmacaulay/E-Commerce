@@ -1,16 +1,16 @@
 const express = require("express");
 const { addReview, updateReview, deleteReview} = require("../Controllers/review.controller");
-const { authorization } = require("../Middleware/Authentication");
+const { authorization } = require("../Middlewares/Authentication");
 
 const router = express.Router();
 
 // Add a review
-router.post("/:productId", authorization, addReview);
+router.post("/product/review/add/:productId", authorization, addReview);
 
 // Update a review
-router.put("/:productId", authorization, updateReview);
+router.put("/product/review/update/:productId", authorization, updateReview);
 
 // Delete a review
-router.delete("/:productId", authorization, deleteReview);
+router.delete("/product/review/delete/:productId", authorization, deleteReview);
 
 module.exports = router;

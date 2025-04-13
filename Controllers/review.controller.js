@@ -1,3 +1,6 @@
+const Product = require("../Models/product.model");
+const Review = require("../Models/review.model");
+
 exports.addReview = async (req, res) => {
     const { productId } = req.params; // Product ID from the URL
     const { rating, comment } = req.body; // Rating and comment from the request body
@@ -26,9 +29,10 @@ exports.addReview = async (req, res) => {
         product.reviews.push(newReview);
 
         // Update the product's average rating
-        product.updateAverageRating();
+        product.updateAverageRatings();
 
-        await product.save();
+        // Save only the `reviews` and `averageRating` fields
+        await product.save({ validateModifiedOnly: true });
 
         res.status(201).json({ message: "Review added successfully", review: newReview });
     } catch (error) {
@@ -59,9 +63,10 @@ exports.deleteReview = async (req, res) => {
         product.reviews.splice(reviewIndex, 1);
 
         // Update the product's average rating
-        product.updateAverageRating();
+        product.updateAverageRatings();
 
-        await product.save();
+        // Save only the `reviews` and `averageRating` fields
+        await product.save({ validateModifiedOnly: true });
 
         res.status(200).json({ message: "Review deleted successfully" });
     } catch (error) {
@@ -95,9 +100,9 @@ exports.updateReview = async (req, res) => {
         if (comment) review.comment = comment;
 
         // Update the product's average rating
-        product.updateAverageRating();
+        product.updateAverageRatings();
 
-        await product.save();
+        await product.save({ validateModifiedOnly: true });
 
         res.status(200).json({ message: "Review updated successfully", review });
     } catch (error) {
